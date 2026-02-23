@@ -6,14 +6,16 @@ A modern, responsive real estate website for showcasing properties with an easy-
 
 ## 🌟 Features
 
-- **Professional Design**: Modern, sleek interface with smooth animations
-- **Property Management**: Easy-to-use admin panel for adding/editing properties
-- **Multiple Media Support**: Add multiple images and videos per property
-- **Sale/Rent Categories**: Separate sections for properties for sale and rent
-- **Responsive Design**: Works perfectly on desktop, tablet, and mobile
-- **Inquiry System**: Professional contact forms with email integration
-- **Logo Support**: Automatic logo detection and display
-- **Category Filtering**: Filter by Residential, Commercial, and Plots
+- **🔐 Secure Authentication**: Admin and user login system with role-based access
+- **👨‍💼 Admin Panel**: Full property management for authorized users only
+- **👥 User Dashboard**: Browse properties and submit inquiries (logged-in users)
+- **🏠 Professional Design**: Modern, sleek interface with smooth animations
+- **📱 Multiple Media Support**: Add multiple images and videos per property
+- **🏷️ Sale/Rent Categories**: Separate sections for properties for sale and rent
+- **📱 Responsive Design**: Works perfectly on desktop, tablet, and mobile
+- **📧 Inquiry System**: Professional contact forms with email integration
+- **🎨 Logo Support**: Automatic logo detection and display
+- **🔍 Category Filtering**: Filter by Residential, Commercial, and Plots
 
 ## 🚀 Live Demo
 
@@ -46,8 +48,14 @@ Edit `index.html` and update:
 - Email address
 - Physical address
 
-### 4. Start Adding Properties
-- Open `admin.html` in your browser
+### 4. Setup Authentication (IMPORTANT!)
+- **⚠️ Change default credentials immediately!**
+- Default admin: `admin` / `admin123`
+- Default user: `user` / `user123`
+- See `security-setup.md` for detailed instructions
+
+### 5. Start Adding Properties
+- Login as admin at `yoursite.com/login.html`
 - Use the admin panel to add properties with images/videos
 - Properties will automatically appear on the main website
 
@@ -55,12 +63,17 @@ Edit `index.html` and update:
 
 ```
 Reewa-Homes/
-├── index.html              # Main website
-├── admin.html              # Admin panel
+├── index.html              # Main website (public)
+├── login.html              # Login page
+├── dashboard.html          # User dashboard (authenticated)
+├── admin.html              # Admin panel (admin only)
 ├── styles.css              # All styling
 ├── script.js               # Main website functionality
+├── auth.js                 # Authentication system
+├── dashboard.js            # User dashboard functionality
 ├── admin.js                # Admin panel functionality
 ├── logo.png                # Your logo (add this)
+├── security-setup.md       # Security configuration guide
 ├── logo-instructions.md    # Logo setup guide
 ├── README.md               # This file
 └── .gitignore             # Git ignore rules

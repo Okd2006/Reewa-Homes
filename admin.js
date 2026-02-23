@@ -1,7 +1,25 @@
-// Enhanced admin functionality with media support
+// Enhanced admin functionality with authentication
 let properties = JSON.parse(localStorage.getItem('properties')) || [];
 let currentMedia = [];
 let editingPropertyId = null;
+
+// Check admin authentication on page load
+document.addEventListener('DOMContentLoaded', () => {
+    // Check if user is logged in and is admin
+    if (!auth.isLoggedIn() || !auth.isAdmin()) {
+        alert('Access denied. Admin login required.');
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    // Load admin info
+    const user = auth.getCurrentUser();
+    document.getElementById('admin-name').textContent = user.name;
+    
+    // Initialize admin panel
+    displayProperties();
+    checkAdminLogo();
+});
 
 // Save properties to localStorage
 function saveProperties() {

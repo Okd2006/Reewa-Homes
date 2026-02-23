@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Dashboard - Reewa Homes</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .dashboard-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #fff;
+            padding: 2rem 0;
+            margin-top: 60px;
+        }
+        
+        .dashboard-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .user-details h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        
+        .user-details p {
+            margin: 0;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        .dashboard-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .action-btn {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: transparent;
+            color: #fff;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: #d4af37;
+        }
+        
+        .logout-btn {
+            background: rgba(220, 53, 69, 0.2);
+            border-color: #dc3545;
+        }
+        
+        .logout-btn:hover {
+            background: #dc3545;
+            border-color: #dc3545;
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            opacity: 0.9;
+        }
+        
+        .dashboard-content {
+            padding: 3rem 0;
+        }
+        
+        .welcome-message {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .welcome-message h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+        
+        .welcome-message p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .quick-action-card {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .quick-action-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .quick-action-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .quick-action-card h3 {
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+        
+        .quick-action-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .quick-action-btn {
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        
+        .quick-action-btn:hover {
+            background: linear-gradient(135deg, #b8941f 0%, #d4af37 100%);
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .dashboard-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="logo.png" alt="Reewa Homes" id="dashboard-logo-img" style="display: none;">
+                <div class="logo-text">Reewa Homes</div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#properties">Properties</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#" class="logout-btn">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="dashboard-header">
+        <div class="container">
+            <div class="dashboard-nav">
+                <div class="user-info">
+                    <div class="user-avatar" id="user-avatar">U</div>
+                    <div class="user-details">
+                        <h3 id="user-name">Property Viewer</h3>
+                        <p id="user-role">Logged in as User</p>
+                    </div>
+                </div>
+                <div class="dashboard-actions">
+                    <a href="index.html" class="action-btn">🏠 Main Website</a>
+                    <a href="#" class="action-btn logout-btn">🚪 Logout</a>
+                </div>
+            </div>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-properties">0</div>
+                    <div class="stat-label">Total Properties</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="for-sale">0</div>
+                    <div class="stat-label">For Sale</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="for-rent">0</div>
+                    <div class="stat-label">For Rent</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="categories">0</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dashboard-content">
+        <div class="container">
+            <div class="welcome-message">
+                <h2>Welcome to Your Property Dashboard</h2>
+                <p>Browse available properties and submit inquiries for your dream home</p>
+            </div>
+            
+            <div class="quick-actions">
+                <div class="quick-action-card">
+                    <div class="quick-action-icon">🏠</div>
+                    <h3>Browse Properties</h3>
+                    <p>View all available properties with detailed information and images</p>
+                    <a href="#properties-section" class="quick-action-btn">View Properties</a>
+                </div>
+                
+                <div class="quick-action-card">
+                    <div class="quick-action-icon">🔍</div>
+                    <h3>Search & Filter</h3>
+                    <p>Find properties by category, type, and price range</p>
+                    <a href="#properties-section" class="quick-action-btn">Search Now</a>
+                </div>
+                
+                <div class="quick-action-card">
+                    <div class="quick-action-icon">📧</div>
+                    <h3>Submit Inquiry</h3>
+                    <p>Contact us about any property you're interested in</p>
+                    <a href="#contact" class="quick-action-btn">Contact Us</a>
+                </div>
+                
+                <div class="quick-action-card">
+                    <div class="quick-action-icon">📱</div>
+                    <h3>Mobile Friendly</h3>
+                    <p>Access properties on any device, anywhere, anytime</p>
+                    <a href="index.html" class="quick-action-btn">Mobile View</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Properties Section (same as main website) -->
+    <section id="properties-section" class="properties-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Available Properties</h2>
+                <p>Discover exceptional properties tailored to your needs</p>
+            </div>
+            
+            <div class="property-type-tabs">
+                <button class="type-tab active" data-type="all">All</button>
+                <button class="type-tab" data-type="sale">For Sale</button>
+                <button class="type-tab" data-type="rent">For Rent</button>
+            </div>
+            
+            <div class="filter-tabs">
+                <button class="filter-btn active" data-category="all">All Properties</button>
+                <button class="filter-btn" data-category="residential">Residential</button>
+                <button class="filter-btn" data-category="commercial">Commercial</button>
+                <button class="filter-btn" data-category="plots">Plots</button>
+            </div>
+
+            <div id="properties-grid" class="properties-grid"></div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <h2>Get In Touch</h2>
+            <p>Ready to find your dream property? Contact us today.</p>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <h3>📞 Phone</h3>
+                    <p>+91 [Your Phone]</p>
+                </div>
+                <div class="contact-item">
+                    <h3>✉️ Email</h3>
+                    <p>info@reewahomes.com</p>
+                </div>
+                <div class="contact-item">
+                    <h3>📍 Address</h3>
+                    <p>[Your Address]</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Inquiry Modal (same as main website) -->
+    <div id="inquiry-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <h2>Property Inquiry</h2>
+            </div>
+            <div class="modal-body">
+                <form id="inquiry-form">
+                    <input type="hidden" id="property-id" name="propertyId">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input type="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Inquiry Type</label>
+                        <select name="inquiryType">
+                            <option value="general">General Inquiry</option>
+                            <option value="viewing">Schedule Viewing</option>
+                            <option value="purchase">Purchase Interest</option>
+                            <option value="rental">Rental Interest</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea name="message" rows="4" placeholder="Tell us about your requirements..."></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit Inquiry</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Media Gallery Modal -->
+    <div id="media-modal" class="media-modal">
+        <div class="media-modal-content">
+            <span class="close">&times;</span>
+            <button class="media-nav prev" onclick="changeMedia(-1)">‹</button>
+            <div id="media-display"></div>
+            <button class="media-nav next" onclick="changeMedia(1)">›</button>
+            <div class="media-counter">
+                <span id="media-current">1</span> / <span id="media-total">1</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Reewa Homes. All rights reserved. | Professional Real Estate Services</p>
+        </div>
+    </footer>
+
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
