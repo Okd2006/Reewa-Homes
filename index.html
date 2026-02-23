@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reewa Homes - Premium Real Estate</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="logo.png" alt="Reewa Homes" id="logo-img" style="display: none;">
+                <div class="logo-text">Reewa Homes</div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#properties">Properties</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Discover Your Perfect Property</h1>
+            <p>Premium real estate solutions for buying, selling, and renting</p>
+            <a href="#properties" class="cta-button">Explore Properties</a>
+        </div>
+    </section>
+
+    <section id="properties" class="properties-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Properties</h2>
+                <p>Discover exceptional properties tailored to your needs</p>
+            </div>
+            
+            <div class="property-type-tabs">
+                <button class="type-tab active" data-type="all">All</button>
+                <button class="type-tab" data-type="sale">For Sale</button>
+                <button class="type-tab" data-type="rent">For Rent</button>
+            </div>
+            
+            <div class="filter-tabs">
+                <button class="filter-btn active" data-category="all">All Properties</button>
+                <button class="filter-btn" data-category="residential">Residential</button>
+                <button class="filter-btn" data-category="commercial">Commercial</button>
+                <button class="filter-btn" data-category="plots">Plots</button>
+            </div>
+
+            <div id="properties-grid" class="properties-grid"></div>
+        </div>
+    </section>
+
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2>About Reewa Homes</h2>
+            <p>With years of experience in the real estate industry, Reewa Homes is committed to providing exceptional service in buying, selling, and renting properties. We understand that finding the right property is more than just a transaction – it's about finding your perfect home or investment.</p>
+        </div>
+    </section>
+
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <h2>Get In Touch</h2>
+            <p>Ready to find your dream property? Contact us today.</p>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <h3>📞 Phone</h3>
+                    <p>+91 [Your Phone]</p>
+                </div>
+                <div class="contact-item">
+                    <h3>✉️ Email</h3>
+                    <p>info@reewahomes.com</p>
+                </div>
+                <div class="contact-item">
+                    <h3>📍 Address</h3>
+                    <p>[Your Address]</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Inquiry Modal -->
+    <div id="inquiry-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <h2>Property Inquiry</h2>
+            </div>
+            <div class="modal-body">
+                <form id="inquiry-form">
+                    <input type="hidden" id="property-id" name="propertyId">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input type="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Inquiry Type</label>
+                        <select name="inquiryType">
+                            <option value="general">General Inquiry</option>
+                            <option value="viewing">Schedule Viewing</option>
+                            <option value="purchase">Purchase Interest</option>
+                            <option value="rental">Rental Interest</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea name="message" rows="4" placeholder="Tell us about your requirements..."></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit Inquiry</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Media Gallery Modal -->
+    <div id="media-modal" class="media-modal">
+        <div class="media-modal-content">
+            <span class="close">&times;</span>
+            <button class="media-nav prev" onclick="changeMedia(-1)">‹</button>
+            <div id="media-display"></div>
+            <button class="media-nav next" onclick="changeMedia(1)">›</button>
+            <div class="media-counter">
+                <span id="media-current">1</span> / <span id="media-total">1</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Reewa Homes. All rights reserved. | Professional Real Estate Services</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

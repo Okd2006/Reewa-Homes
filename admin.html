@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Reewa Homes</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 100px auto;
+            padding: 2rem;
+        }
+        
+        .admin-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .admin-header h1 {
+            font-size: 2.5rem;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+        
+        .add-property-form {
+            background: #fff;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        
+        .form-section h3 {
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 0.5rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .media-upload-area {
+            border: 2px dashed #d0d0d0;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .media-upload-area:hover {
+            border-color: #d4af37;
+        }
+        
+        .media-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .media-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+        
+        .media-item img,
+        .media-item video {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+        
+        .media-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .property-list {
+            background: #fff;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .property-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            background: #f8f9fa;
+        }
+        
+        .property-info h4 {
+            margin: 0 0 0.5rem 0;
+            color: #1a1a1a;
+        }
+        
+        .property-meta {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .property-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .edit-btn {
+            padding: 0.5rem 1rem;
+            background: #d4af37;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .delete-btn {
+            padding: 0.5rem 1rem;
+            background: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        
+        .edit-btn:hover {
+            background: #b8941f;
+        }
+        
+        select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+        
+        .url-input {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .url-input input {
+            flex: 1;
+        }
+        
+        .add-url-btn {
+            padding: 0.5rem 1rem;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row,
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="logo.png" alt="Reewa Homes" id="admin-logo-img" style="display: none;">
+                <div class="logo-text">Reewa Homes - Admin</div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">View Website</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>Property Management System</h1>
+            <p>Add, edit, and manage your property listings with ease</p>
+        </div>
+
+        <div class="add-property-form">
+            <h2>Add New Property</h2>
+            <form id="add-property-form">
+                <input type="hidden" name="editId" id="edit-id">
+                
+                <div class="form-section">
+                    <h3>Basic Information</h3>
+                    <div class="form-group">
+                        <label>Property Title *</label>
+                        <input type="text" name="title" required placeholder="e.g., Luxury Villa with Pool">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category *</label>
+                            <select name="category" required>
+                                <option value="residential">Residential</option>
+                                <option value="commercial">Commercial</option>
+                                <option value="plots">Plots</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Listing Type *</label>
+                            <select name="type" required>
+                                <option value="sale">For Sale</option>
+                                <option value="rent">For Rent</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Location *</label>
+                        <input type="text" name="location" required placeholder="e.g., Sector 15, Prime Location">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea name="description" rows="3" placeholder="Brief description of the property..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Pricing</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Sale Price *</label>
+                            <input type="text" name="price" placeholder="e.g., ₹2.5 Cr" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Rent Price (if applicable)</label>
+                            <input type="text" name="rentPrice" placeholder="e.g., ₹45,000/month">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Property Details</h3>
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label>Bedrooms</label>
+                            <input type="number" name="bedrooms" min="0" placeholder="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Bathrooms</label>
+                            <input type="number" name="bathrooms" min="0" placeholder="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Area (sq ft) *</label>
+                            <input type="text" name="area" required placeholder="e.g., 3500 sq ft">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Media Gallery</h3>
+                    <div class="media-upload-area">
+                        <p>📷 Add Images and Videos</p>
+                        <div class="url-input">
+                            <input type="url" id="media-url" placeholder="Paste image/video URL here">
+                            <select id="media-type">
+                                <option value="image">Image</option>
+                                <option value="video">Video</option>
+                            </select>
+                            <button type="button" class="add-url-btn" onclick="addMediaUrl()">Add</button>
+                        </div>
+                        <small>Tip: Upload images to a free service like Imgur, then paste the direct link here</small>
+                    </div>
+                    <div id="media-list" class="media-list"></div>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="submit-btn">Add Property</button>
+            </form>
+        </div>
+
+        <div class="property-list">
+            <h2>Current Properties</h2>
+            <div id="property-list"></div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
