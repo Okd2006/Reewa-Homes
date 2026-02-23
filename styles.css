@@ -799,3 +799,51 @@ footer {
         margin-bottom: 2rem;
     }
 }
+
+
+/* Custom Icon Styling */
+.icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+}
+
+.icon-small {
+    width: 20px;
+    height: 20px;
+}
+
+.icon-medium {
+    width: 32px;
+    height: 32px;
+}
+
+.icon-large {
+    width: 48px;
+    height: 48px;
+}
+
+.contact-item .icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 0.5rem;
+}
+
+.quick-action-icon img {
+    width: 64px;
+    height: 64px;
+}
+
+.feature-item .icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.3rem;
+}
+
+.media-btn .icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 0.3rem;
+}

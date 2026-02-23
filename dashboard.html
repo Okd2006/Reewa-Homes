@@ -226,8 +226,14 @@
                     </div>
                 </div>
                 <div class="dashboard-actions">
-                    <a href="index.html" class="action-btn">🏠 Main Website</a>
-                    <a href="#" class="action-btn logout-btn">🚪 Logout</a>
+                    <a href="index.html" class="action-btn">
+                        <img src="icons/home.png" alt="Home" class="icon icon-small" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                        <span style="display:none;">🏠</span> Main Website
+                    </a>
+                    <a href="#" class="action-btn logout-btn">
+                        <img src="icons/logout.png" alt="Logout" class="icon icon-small" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                        <span style="display:none;">🚪</span> Logout
+                    </a>
                 </div>
             </div>
             
@@ -261,28 +267,36 @@
             
             <div class="quick-actions">
                 <div class="quick-action-card">
-                    <div class="quick-action-icon">🏠</div>
+                    <div class="quick-action-icon">
+                        <img src="icons/home.png" alt="Browse Properties" onerror="this.style.display='none'; this.parentElement.innerHTML='🏠';">
+                    </div>
                     <h3>Browse Properties</h3>
                     <p>View all available properties with detailed information and images</p>
                     <a href="#properties-section" class="quick-action-btn">View Properties</a>
                 </div>
                 
                 <div class="quick-action-card">
-                    <div class="quick-action-icon">🔍</div>
+                    <div class="quick-action-icon">
+                        <img src="icons/search.png" alt="Search" onerror="this.style.display='none'; this.parentElement.innerHTML='🔍';">
+                    </div>
                     <h3>Search & Filter</h3>
                     <p>Find properties by category, type, and price range</p>
                     <a href="#properties-section" class="quick-action-btn">Search Now</a>
                 </div>
                 
                 <div class="quick-action-card">
-                    <div class="quick-action-icon">📧</div>
+                    <div class="quick-action-icon">
+                        <img src="icons/inquiry.png" alt="Submit Inquiry" onerror="this.style.display='none'; this.parentElement.innerHTML='📧';">
+                    </div>
                     <h3>Submit Inquiry</h3>
                     <p>Contact us about any property you're interested in</p>
                     <a href="#contact" class="quick-action-btn">Contact Us</a>
                 </div>
                 
                 <div class="quick-action-card">
-                    <div class="quick-action-icon">📱</div>
+                    <div class="quick-action-icon">
+                        <img src="icons/mobile.png" alt="Mobile Friendly" onerror="this.style.display='none'; this.parentElement.innerHTML='📱';">
+                    </div>
                     <h3>Mobile Friendly</h3>
                     <p>Access properties on any device, anywhere, anytime</p>
                     <a href="index.html" class="quick-action-btn">Mobile View</a>
@@ -323,15 +337,21 @@
             <p>Ready to find your dream property? Contact us today.</p>
             <div class="contact-info">
                 <div class="contact-item">
-                    <h3>📞 Phone</h3>
+                    <img src="icons/phone.png" alt="Phone" class="icon" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                    <span style="display:none;">📞</span>
+                    <h3>Phone</h3>
                     <p>+91 [Your Phone]</p>
                 </div>
                 <div class="contact-item">
-                    <h3>✉️ Email</h3>
+                    <img src="icons/email.png" alt="Email" class="icon" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                    <span style="display:none;">✉️</span>
+                    <h3>Email</h3>
                     <p>info@reewahomes.com</p>
                 </div>
                 <div class="contact-item">
-                    <h3>📍 Address</h3>
+                    <img src="icons/location.png" alt="Location" class="icon" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                    <span style="display:none;">📍</span>
+                    <h3>Address</h3>
                     <p>[Your Address]</p>
                 </div>
             </div>

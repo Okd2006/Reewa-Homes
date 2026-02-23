@@ -80,7 +80,8 @@ function displayProperties(type = 'all', category = 'all') {
                     ${property.media && property.media.length > 1 ? `
                         <div class="media-controls">
                             <button class="media-btn" onclick="openMediaGallery(${property.id})" title="View Gallery">
-                                📷 ${property.media.length}
+                                <img src="icons/camera.png" alt="Gallery" class="icon icon-small" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                                <span style="display:none;">📷</span> ${property.media.length}
                             </button>
                         </div>
                     ` : ''}
@@ -88,12 +89,27 @@ function displayProperties(type = 'all', category = 'all') {
                 <div class="property-details">
                     <span class="property-category">${property.category}</span>
                     <h3>${property.title}</h3>
-                    <p class="property-location">📍 ${property.location}</p>
+                    <p class="property-location">
+                        <img src="icons/location.png" alt="Location" class="icon icon-small" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                        <span style="display:none;">📍</span> ${property.location}
+                    </p>
                     <p class="property-price">${displayPrice}</p>
                     <div class="property-features">
-                        ${property.bedrooms ? `<div class="feature-item"><span>🛏️</span><span>${property.bedrooms} Beds</span></div>` : ''}
-                        ${property.bathrooms ? `<div class="feature-item"><span>🚿</span><span>${property.bathrooms} Baths</span></div>` : ''}
-                        <div class="feature-item"><span>📐</span><span>${property.area}</span></div>
+                        ${property.bedrooms ? `<div class="feature-item">
+                            <img src="icons/bed.png" alt="Bedrooms" class="icon icon-small" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                            <span style="display:none;">🛏️</span>
+                            <span>${property.bedrooms} Beds</span>
+                        </div>` : ''}
+                        ${property.bathrooms ? `<div class="feature-item">
+                            <img src="icons/bath.png" alt="Bathrooms" class="icon icon-small" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                            <span style="display:none;">🚿</span>
+                            <span>${property.bathrooms} Baths</span>
+                        </div>` : ''}
+                        <div class="feature-item">
+                            <img src="icons/area.png" alt="Area" class="icon icon-small" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                            <span style="display:none;">📐</span>
+                            <span>${property.area}</span>
+                        </div>
                     </div>
                     <button class="inquire-btn" onclick="openInquiryModal(${property.id}, '${property.title}')">
                         Inquire Now
