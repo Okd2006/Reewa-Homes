@@ -1,5 +1,7 @@
 # Reewa Homes - Professional Real Estate Website
 
+*Just me helping my dad create a website for his Real Estate Business*
+
 A modern, responsive real estate website for showcasing properties with an easy-to-use admin panel for property management.
 
 ## 🌟 Features
@@ -15,7 +17,7 @@ A modern, responsive real estate website for showcasing properties with an easy-
 
 ## 🚀 Live Demo
 
-Visit the live website: [Your GitHub Pages URL will be here]
+Visit the live website: [https://okd2006.github.io/Reewa-Homes/](https://okd2006.github.io/Reewa-Homes/)
 
 ## 📱 Screenshots
 
@@ -29,8 +31,8 @@ Visit the live website: [Your GitHub Pages URL will be here]
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/reewa-homes.git
-cd reewa-homes
+git clone https://github.com/Okd2006/Reewa-Homes.git
+cd Reewa-Homes
 ```
 
 ### 2. Add Your Logo (Optional)
@@ -52,7 +54,7 @@ Edit `index.html` and update:
 ## 📁 File Structure
 
 ```
-reewa-homes/
+Reewa-Homes/
 ├── index.html              # Main website
 ├── admin.html              # Admin panel
 ├── styles.css              # All styling
@@ -83,7 +85,7 @@ Edit `styles.css` to change the color scheme:
 1. Push your code to GitHub
 2. Go to repository Settings → Pages
 3. Select "Deploy from a branch" → "main"
-4. Your site will be live at `https://yourusername.github.io/reewa-homes`
+4. Your site will be live at `https://okd2006.github.io/Reewa-Homes`
 
 ### Netlify (Free)
 1. Connect your GitHub repository to Netlify
