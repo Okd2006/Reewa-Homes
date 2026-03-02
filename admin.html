@@ -8,11 +8,30 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
     <style>
+        /* color variables (same used in global stylesheet) */
+        :root {
+            --primary-color: #d4af37;
+            --primary-dark: #b8941f;
+            --accent-color: #f4d03f;
+            --bg-dark: #000;
+            --bg-darker: #111;
+            --bg-card: #111;
+            --text-dark: #ccc;
+            --text-light: #fff;
+        }
         .admin-container {
             max-width: 1200px;
             margin: 100px auto;
             padding: 2rem;
+            background: var(--bg-card);
+            color: var(--text-light);
         }
         
         .admin-header {
@@ -22,16 +41,17 @@
         
         .admin-header h1 {
             font-size: 2.5rem;
-            color: #1a1a1a;
+            color: var(--text-light);
             margin-bottom: 0.5rem;
         }
         
         .add-property-form {
-            background: #fff;
+            background: var(--bg-card);
             padding: 3rem;
             border-radius: 20px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.1);
             margin-bottom: 3rem;
+            color: var(--text-light);
         }
         
         .form-section {
@@ -39,7 +59,7 @@
         }
         
         .form-section h3 {
-            color: #1a1a1a;
+            color: var(--text-light);
             margin-bottom: 1rem;
             font-size: 1.3rem;
             border-bottom: 2px solid #f0f0f0;
@@ -107,10 +127,11 @@
         }
         
         .property-list {
-            background: #fff;
+            background: var(--bg-card);
             padding: 3rem;
             border-radius: 20px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            color: var(--text-light);
         }
         
         .property-item {
@@ -206,8 +227,7 @@
     <nav class="navbar">
         <div class="container">
             <div class="logo">
-                <img src="logo.png" alt="Reewa Homes" id="admin-logo-img" style="display: none;">
-                <div class="logo-text">Reewa Homes - Admin</div>
+                <img src="logo.png" alt="Reewa Homes - Admin" id="admin-logo-img">
             </div>
             <ul class="nav-links">
                 <li><a href="index.html">View Website</a></li>
@@ -335,8 +355,89 @@
             <h2>Current Properties</h2>
             <div id="property-list"></div>
         </div>
+
+        <div class="property-list" style="margin-top: 3rem;">
+            <h2>Property Inquiries</h2>
+            <p style="color: #666; margin-bottom: 2rem;">View and manage all property inquiry requests from potential clients</p>
+            <div id="inquiries-container"></div>
+        </div>
     </div>
 
+    <style>
+        .inquiry-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #d4af37;
+        }
+        
+        .inquiry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .inquiry-header h4 {
+            margin: 0;
+            color: #1a1a1a;
+        }
+        
+        .inquiry-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-contacted {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-closed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .inquiry-details p {
+            margin: 0.5rem 0;
+            color: #333;
+        }
+        
+        .inquiry-details a {
+            color: #d4af37;
+            text-decoration: none;
+        }
+        
+        .inquiry-details a:hover {
+            text-decoration: underline;
+        }
+        
+        .inquiry-actions {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .inquiry-actions select {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+        }
+    </style>
+
+    <script src="firebase-config.js"></script>
     <script src="auth.js"></script>
     <script src="admin.js"></script>
 </body>

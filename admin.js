@@ -1,29 +1,61 @@
-// Enhanced admin functionality with authentication
-let properties = JSON.parse(localStorage.getItem('properties')) || [];
+// Admin functionality with Firebase integration
+const db = window.firebaseDb;
+const auth = window.firebaseAuth;
+let properties = [];
+let inquiries = [];
 let currentMedia = [];
 let editingPropertyId = null;
 
-// Check admin authentication on page load
-document.addEventListener('DOMContentLoaded', () => {
-    // Check if user is logged in and is admin
-    if (!auth.isLoggedIn() || !auth.isAdmin()) {
-        alert('Access denied. Admin login required.');
-        window.location.href = 'login.html';
-        return;
-    }
+// Initialize admin panel
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Admin panel loading...');
     
-    // Load admin info
-    const user = auth.getCurrentUser();
-    document.getElementById('admin-name').textContent = user.name;
-    
-    // Initialize admin panel
-    displayProperties();
-    checkAdminLogo();
+    // Wait for auth state to be determined
+    auth.onAuthStateChanged(async (user) => {
+        console.log('Auth state changed. User:', user ? user.email : 'Not logged in');
+        
+        if (!user) {
+            console.warn('User not authenticated! Redirecting to login...');
+            alert('You must be logged in to access the admin panel.');
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        // User is logged in, load data
+        console.log('User authenticated:', user.email);
+        await loadProperties();
+        await loadInquiries();
+        displayProperties();
+        displayInquiries();
+    });
 });
 
-// Save properties to localStorage
-function saveProperties() {
-    localStorage.setItem('properties', JSON.stringify(properties));
+// Load properties from Firebase
+async function loadProperties() {
+    try {
+        const snapshot = await db.collection('properties').orderBy('createdAt', 'desc').get();
+        properties = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+    } catch (error) {
+        console.error('Error loading properties:', error);
+        properties = [];
+    }
+}
+
+// Load inquiries from Firebase
+async function loadInquiries() {
+    try {
+        const snapshot = await db.collection('inquiries').orderBy('createdAt', 'desc').get();
+        inquiries = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+    } catch (error) {
+        console.error('Error loading inquiries:', error);
+        inquiries = [];
+    }
 }
 
 // Add media URL
@@ -47,7 +79,7 @@ function addMediaUrl() {
     displayMediaList();
 }
 
-// Display media list in admin
+// Display media list
 function displayMediaList() {
     const mediaList = document.getElementById('media-list');
     
@@ -68,7 +100,7 @@ function removeMedia(index) {
     displayMediaList();
 }
 
-// Display properties in admin panel
+// Display properties
 function displayProperties() {
     const list = document.getElementById('property-list');
     
@@ -83,16 +115,70 @@ function displayProperties() {
                 <h4>${property.title}</h4>
                 <div class="property-meta">
                     <span>${property.category} • ${property.type === 'sale' ? 'For Sale' : 'For Rent'}</span><br>
-                    <span>${property.location} • ${property.type === 'sale' ? property.price : property.rentPrice}</span><br>
+                    <span>${property.location} • ${property.type === 'sale' ? property.price : property.rent_price}</span><br>
                     <small>${property.media ? property.media.length : 0} media files</small>
                 </div>
             </div>
             <div class="property-actions">
-                <button class="edit-btn" onclick="editProperty(${property.id})">Edit</button>
-                <button class="delete-btn" onclick="deleteProperty(${property.id})">Delete</button>
+                <button class="edit-btn" onclick="editProperty('${property.id}')">Edit</button>
+                <button class="delete-btn" onclick="deleteProperty('${property.id}')">Delete</button>
             </div>
         </div>
     `).join('');
+}
+
+// Display inquiries
+function displayInquiries() {
+    const container = document.getElementById('inquiries-container');
+    
+    if (!container) return;
+    
+    if (inquiries.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">No inquiries yet.</p>';
+        return;
+    }
+    
+    container.innerHTML = inquiries.map(inquiry => {
+        const date = inquiry.createdAt ? inquiry.createdAt.toDate().toLocaleString() : 'N/A';
+        const statusClass = inquiry.status === 'pending' ? 'status-pending' : 
+                           inquiry.status === 'contacted' ? 'status-contacted' : 'status-closed';
+        
+        return `
+            <div class="inquiry-card">
+                <div class="inquiry-header">
+                    <h4>${inquiry.propertyTitle}</h4>
+                    <span class="inquiry-status ${statusClass}">${inquiry.status}</span>
+                </div>
+                <div class="inquiry-details">
+                    <p><strong>Name:</strong> ${inquiry.name}</p>
+                    <p><strong>Email:</strong> <a href="mailto:${inquiry.email}">${inquiry.email}</a></p>
+                    <p><strong>Phone:</strong> <a href="tel:${inquiry.phone}">${inquiry.phone}</a></p>
+                    <p><strong>Type:</strong> ${inquiry.inquiryType}</p>
+                    ${inquiry.message ? `<p><strong>Message:</strong> ${inquiry.message}</p>` : ''}
+                    <p><small>Submitted: ${date}</small></p>
+                </div>
+                <div class="inquiry-actions">
+                    <select onchange="updateInquiryStatus('${inquiry.id}', this.value)" value="${inquiry.status}">
+                        <option value="pending" ${inquiry.status === 'pending' ? 'selected' : ''}>Pending</option>
+                        <option value="contacted" ${inquiry.status === 'contacted' ? 'selected' : ''}>Contacted</option>
+                        <option value="closed" ${inquiry.status === 'closed' ? 'selected' : ''}>Closed</option>
+                    </select>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Update inquiry status
+async function updateInquiryStatus(id, status) {
+    try {
+        await db.collection('inquiries').doc(id).update({ status: status });
+        await loadInquiries();
+        displayInquiries();
+    } catch (error) {
+        console.error('Error updating inquiry:', error);
+        alert('Failed to update status');
+    }
 }
 
 // Edit property
@@ -103,7 +189,6 @@ function editProperty(id) {
     editingPropertyId = id;
     currentMedia = property.media ? [...property.media] : [];
     
-    // Fill form with property data
     const form = document.getElementById('add-property-form');
     form.title.value = property.title;
     form.category.value = property.category;
@@ -111,7 +196,7 @@ function editProperty(id) {
     form.location.value = property.location;
     form.description.value = property.description || '';
     form.price.value = property.price;
-    form.rentPrice.value = property.rentPrice || '';
+    form.rentPrice.value = property.rent_price || '';
     form.bedrooms.value = property.bedrooms || '';
     form.bathrooms.value = property.bathrooms || '';
     form.area.value = property.area;
@@ -120,86 +205,102 @@ function editProperty(id) {
     document.getElementById('submit-btn').textContent = 'Update Property';
     
     displayMediaList();
-    
-    // Scroll to form
     form.scrollIntoView({ behavior: 'smooth' });
 }
 
 // Add/Update property
-document.getElementById('add-property-form').addEventListener('submit', function(e) {
+document.getElementById('add-property-form').addEventListener('submit', async function(e) {
     e.preventDefault();
+    
+    // Check if user is authenticated
+    if (!auth.currentUser) {
+        alert('You must be logged in to add properties. Please refresh the page and login again.');
+        console.log('Current user:', auth.currentUser);
+        return;
+    }
     
     const formData = new FormData(this);
     const editId = formData.get('editId');
     
     const propertyData = {
-        id: editId ? parseInt(editId) : Date.now(),
         title: formData.get('title'),
         category: formData.get('category'),
         type: formData.get('type'),
         location: formData.get('location'),
         description: formData.get('description'),
         price: formData.get('price'),
-        rentPrice: formData.get('rentPrice'),
+        rent_price: formData.get('rentPrice'),
         bedrooms: formData.get('bedrooms') ? parseInt(formData.get('bedrooms')) : null,
         bathrooms: formData.get('bathrooms') ? parseInt(formData.get('bathrooms')) : null,
         area: formData.get('area'),
-        media: [...currentMedia]
+        media: currentMedia,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdBy: auth.currentUser.uid
     };
     
-    if (editId) {
-        // Update existing property
-        const index = properties.findIndex(p => p.id === parseInt(editId));
-        if (index !== -1) {
-            properties[index] = propertyData;
-            alert('Property updated successfully!');
+    const submitBtn = document.getElementById('submit-btn');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Saving...';
+    
+    try {
+        if (editId) {
+            // Update existing property
+            await db.collection('properties').doc(editId).update(propertyData);
+            alert('✅ Property updated successfully!');
+            console.log('Property updated:', editId);
+        } else {
+            // Add new property
+            const docRef = await db.collection('properties').add(propertyData);
+            alert('✅ Property added successfully! ID: ' + docRef.id);
+            console.log('New property added with ID:', docRef.id);
         }
-    } else {
-        // Add new property
-        properties.push(propertyData);
-        alert('Property added successfully!');
+        
+        await loadProperties();
+        displayProperties();
+        
+        // Reset form
+        this.reset();
+        currentMedia = [];
+        editingPropertyId = null;
+        document.getElementById('edit-id').value = '';
+        document.getElementById('submit-btn').textContent = 'Add Property';
+        displayMediaList();
+    } catch (error) {
+        console.error('Error saving property:', error);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
+        
+        let errorMsg = 'Failed to save property: ' + error.message;
+        if (error.code === 'permission-denied') {
+            errorMsg = 'Permission denied. Make sure you are logged in and have database access.';
+        }
+        alert(errorMsg);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
     }
-    
-    saveProperties();
-    displayProperties();
-    
-    // Reset form
-    this.reset();
-    currentMedia = [];
-    editingPropertyId = null;
-    document.getElementById('edit-id').value = '';
-    document.getElementById('submit-btn').textContent = 'Add Property';
-    displayMediaList();
 });
 
 // Delete property
-function deleteProperty(id) {
+async function deleteProperty(id) {
     const property = properties.find(p => p.id === id);
-    if (confirm(`Are you sure you want to delete "${property.title}"?`)) {
-        properties = properties.filter(p => p.id !== id);
-        saveProperties();
+    if (!confirm(`Are you sure you want to delete "${property.title}"?`)) return;
+    
+    try {
+        await db.collection('properties').doc(id).delete();
+        await loadProperties();
         displayProperties();
         alert('Property deleted successfully!');
+    } catch (error) {
+        console.error('Error deleting property:', error);
+        alert('Failed to delete property');
     }
 }
 
-// Logo handling for admin
-function checkAdminLogo() {
-    const logoImg = document.getElementById('admin-logo-img');
-    const logoText = document.querySelector('.logo-text');
-    
-    const img = new Image();
-    img.onload = function() {
-        logoImg.style.display = 'block';
-        logoText.textContent = 'Admin Panel';
-    };
-    img.onerror = function() {
-        logoImg.style.display = 'none';
-        logoText.textContent = 'Reewa Homes - Admin';
-    };
-    img.src = 'logo.png';
-}
-
-// Initialize admin panel
-displayProperties();
-checkAdminLogo();
+// Make functions globally available
+window.addMediaUrl = addMediaUrl;
+window.removeMedia = removeMedia;
+window.editProperty = editProperty;
+window.deleteProperty = deleteProperty;
+window.updateInquiryStatus = updateInquiryStatus;

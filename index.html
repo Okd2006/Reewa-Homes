@@ -8,13 +8,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <nav class="navbar">
         <div class="container">
             <div class="logo">
-                <img src="logo.png" alt="Reewa Homes" id="logo-img" style="display: none;">
-                <div class="logo-text">Reewa Homes</div>
+                <img src="logo.png" alt="Reewa Homes" id="logo-img">
             </div>
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
@@ -83,7 +87,7 @@
                     <p>info@reewahomes.com</p>
                 </div>
                 <div class="contact-item">
-                    <img src="icons/location.png" alt="Location" class="icon" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                    <img src="icons/marker.png" alt="Location" class="icon" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
                     <span style="display:none;">📍</span>
                     <h3>Address</h3>
                     <p>[Your Address]</p>
@@ -152,6 +156,8 @@
         </div>
     </footer>
 
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script> <!-- import auth helpers -->
     <script src="script.js"></script>
 </body>
 </html>

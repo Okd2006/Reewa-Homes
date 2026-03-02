@@ -8,13 +8,30 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
     <style>
+        /* design variables */
+        :root {
+            --primary-color: #d4af37;
+            --primary-dark: #b8941f;
+            --accent-color: #f4d03f;
+            --bg-dark: #1a1a1a;
+            --bg-darker: #2d2d2d;
+            --text-dark: #333;
+            --text-light: #fff;
+        }
+
         .login-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
             padding: 2rem;
         }
         
@@ -192,35 +209,19 @@
             <div class="error-message" id="error-message"></div>
             <div class="success-message" id="success-message"></div>
             
-            <form class="login-form" id="login-form">
-                <div class="user-type-selector">
-                    <button type="button" class="user-type-btn active" data-type="user">Property Viewer</button>
-                    <button type="button" class="user-type-btn" data-type="admin">Admin</button>
-                </div>
-                
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                
-                <button type="submit" class="login-btn" id="login-btn">Login</button>
-            </form>
-            
-            <div class="demo-credentials">
-                <strong>Demo Credentials:</strong><br>
-                <strong>Admin:</strong> admin / admin123<br>
-                <strong>User:</strong> user / user123
+            <!-- replaced original form with Google sign-in only -->
+            <div id="login-form" style="text-align:center;">
+                <p class="login-subtitle">Sign in to continue</p>
+                <button id="google-signin-btn" class="login-btn" style="background: var(--primary-color); display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+                    <img src="icons/google.svg" alt="Google" style="height:18px;width:18px;"> Sign in with Google
+                </button>
             </div>
             
             <a href="index.html" class="back-to-site">← Back to Website</a>
         </div>
     </div>
 
+    <script src="firebase-config.js"></script>
     <script src="auth.js"></script>
 </body>
 </html>

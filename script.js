@@ -1,56 +1,234 @@
-// Enhanced property data structure with multiple images/videos and sale/rent options
-const properties = JSON.parse(localStorage.getItem('properties')) || [
-    {
-        id: 1,
-        title: "Luxury Villa with Pool",
-        category: "residential",
-        type: "sale", // sale or rent
-        location: "Prime Location, Sector 15",
-        price: "₹2.5 Cr",
-        rentPrice: "₹45,000/month",
-        bedrooms: 4,
-        bathrooms: 3,
-        area: "3500 sq ft",
-        description: "Stunning luxury villa with modern amenities and beautiful garden.",
-        media: [
-            {
-                type: "image",
-                url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23e0e0e0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='20' fill='%23666'%3ELuxury Villa - Main%3C/text%3E%3C/svg%3E"
-            },
-            {
-                type: "image", 
-                url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23d0d0d0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='20' fill='%23666'%3ELiving Room%3C/text%3E%3C/svg%3E"
+// Enhanced property data structure with Firebase integration
+let properties = [];
+const db = window.firebaseDb;
+
+// update navigation after login
+function updateNavUser(user) {
+    const navList = document.querySelector('.nav-links');
+    if (!navList) return;
+
+    // Remove everything and rebuild for simplicity
+    navList.innerHTML = `
+        <li><a href="#home">Home</a></li>
+        <li><a href="#properties">Properties</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+    `;
+
+    if (user) {
+        const displayName = user.displayName || user.email;
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="nav-username">Hello, ${displayName}</span>`;
+        navList.appendChild(li);
+
+        const logoutLi = document.createElement('li');
+        logoutLi.innerHTML = `<a href="#" class="logout-btn" style="color:#dc3545;">Logout</a>`;
+        navList.appendChild(logoutLi);
+
+        logoutLi.querySelector('.logout-btn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                await window.firebaseAuth.signOut();
+                window.location.reload();
             }
-        ]
-    },
-    {
-        id: 2,
-        title: "Modern Apartment",
-        category: "residential",
-        type: "rent",
-        location: "City Center, Downtown",
-        price: "₹85 Lac",
-        rentPrice: "₹25,000/month",
-        bedrooms: 3,
-        bathrooms: 2,
-        area: "1800 sq ft",
-        description: "Contemporary apartment with city views and premium finishes.",
-        media: [
-            {
-                type: "image",
-                url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23c0c0c0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%23666'%3EModern Apartment%3C/text%3E%3C/svg%3E"
-            }
-        ]
+        });
+    } else {
+        // not logged in - show login button
+        const loginLi = document.createElement('li');
+        loginLi.innerHTML = `<a href="login.html" style="background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%); padding: 0.5rem 1rem; border-radius: 20px; color: #fff;">Login</a>`;
+        navList.appendChild(loginLi);
     }
-];
+}
+
+// listen for auth state changes if auth is available
+if (window.firebaseAuth) {
+    window.firebaseAuth.onAuthStateChanged((user) => {
+        updateNavUser(user);
+    });
+}
+
+
+// Load properties from Firebase
+async function loadProperties() {
+    try {
+        const snapshot = await db.collection('properties').orderBy('createdAt', 'desc').get();
+        
+        if (snapshot.empty) {
+            loadDemoProperties();
+        } else {
+            properties = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+        }
+    } catch (error) {
+        console.error('Error loading properties:', error);
+        loadDemoProperties();
+    }
+    
+    displayProperties();
+}
+
+// Load demo properties
+function loadDemoProperties() {
+    properties = [
+        {
+            id: '1',
+            title: "Luxury Villa with Pool",
+            category: "residential",
+            type: "sale",
+            location: "Prime Location, Sector 15",
+            price: "₹2.5 Cr",
+            rent_price: "₹45,000/month",
+            bedrooms: 4,
+            bathrooms: 3,
+            area: "3500 sq ft",
+            description: "Stunning luxury villa with modern amenities and beautiful garden.",
+            media: [
+                {
+                    type: "image",
+                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23e0e0e0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='20' fill='%23666'%3ELuxury Villa - Main%3C/text%3E%3C/svg%3E"
+                }
+            ]
+        },
+        {
+            id: '2',
+            title: "Modern Apartment",
+            category: "residential",
+            type: "rent",
+            location: "City Center, Downtown",
+            price: "₹85 Lac",
+            rent_price: "₹25,000/month",
+            bedrooms: 3,
+            bathrooms: 2,
+            area: "1800 sq ft",
+            description: "Contemporary apartment with city views and premium finishes.",
+            media: [
+                {
+                    type: "image",
+                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23c0c0c0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%23666'%3EModern Apartment%3C/text%3E%3C/svg%3E"
+                }
+            ]
+        },
+        {
+            id: '3',
+            title: "Commercial Office Space",
+            category: "commercial",
+            type: "sale",
+            location: "Business District, Main Road",
+            price: "₹1.8 Cr",
+            rent_price: "₹80,000/month",
+            bedrooms: 0,
+            bathrooms: 2,
+            area: "2500 sq ft",
+            description: "Prime commercial space perfect for offices, with parking and modern facilities.",
+            media: [
+                {
+                    type: "image",
+                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23b0b0b0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%23666'%3EOffice Space%3C/text%3E%3C/svg%3E"
+                }
+            ]
+        },
+        {
+            id: '4',
+            title: "Residential Plot",
+            category: "plots",
+            type: "sale",
+            location: "Green Valley, Sector 22",
+            price: "₹65 Lac",
+            rent_price: null,
+            bedrooms: 0,
+            bathrooms: 0,
+            area: "2400 sq ft",
+            description: "Prime residential plot in developing area with all amenities nearby.",
+            media: [
+                {
+                    type: "image",
+                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23a8d5a8' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%23666'%3EResidential Plot%3C/text%3E%3C/svg%3E"
+                }
+            ]
+        },
+        {
+            id: '5',
+            title: "Penthouse with Terrace",
+            category: "residential",
+            type: "rent",
+            location: "Skyline Towers, City Center",
+            price: "₹3.2 Cr",
+            rent_price: "₹75,000/month",
+            bedrooms: 5,
+            bathrooms: 4,
+            area: "4200 sq ft",
+            description: "Luxurious penthouse with private terrace, panoramic city views, and premium amenities.",
+            media: [
+                {
+                    type: "image",
+                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23d0d0d0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%23666'%3EPenthouse%3C/text%3E%3C/svg%3E"
+                }
+            ]
+        },
+        {
+            id: '6',
+            title: "Retail Shop Space",
+            category: "commercial",
+            type: "rent",
+            location: "Shopping Complex, Market Area",
+            price: "₹95 Lac",
+            rent_price: "₹35,000/month",
+            bedrooms: 0,
+            bathrooms: 1,
+            area: "800 sq ft",
+            description: "Prime retail space in busy shopping area with high foot traffic.",
+            media: [
+                {
+                    type: "image",
+                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23a0a0a0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%23666'%3ERetail Shop%3C/text%3E%3C/svg%3E"
+                }
+            ]
+        },
+        {
+            id: '7',
+            title: "Farmhouse with Land",
+            category: "residential",
+            type: "sale",
+            location: "Countryside, Highway Road",
+            price: "₹1.5 Cr",
+            rent_price: "₹40,000/month",
+            bedrooms: 3,
+            bathrooms: 2,
+            area: "5000 sq ft",
+            description: "Beautiful farmhouse with 1 acre land, perfect for weekend getaway.",
+            media: [
+                {
+                    type: "image",
+                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23c8e6c8' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%23666'%3EFarmhouse%3C/text%3E%3C/svg%3E"
+                }
+            ]
+        },
+        {
+            id: '8',
+            title: "Commercial Plot",
+            category: "plots",
+            type: "sale",
+            location: "Industrial Area, NH-8",
+            price: "₹2.8 Cr",
+            rent_price: null,
+            bedrooms: 0,
+            bathrooms: 0,
+            area: "8000 sq ft",
+            description: "Large commercial plot on main highway, ideal for showroom or warehouse.",
+            media: [
+                {
+                    type: "image",
+                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23909090' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%23666'%3ECommercial Plot%3C/text%3E%3C/svg%3E"
+                }
+            ]
+        }
+    ];
+}
 
 let currentPropertyMedia = [];
 let currentMediaIndex = 0;
-
-// Save properties to localStorage
-function saveProperties() {
-    localStorage.setItem('properties', JSON.stringify(properties));
-}
 
 // Display properties with enhanced filtering
 function displayProperties(type = 'all', category = 'all') {
@@ -66,7 +244,7 @@ function displayProperties(type = 'all', category = 'all') {
     }
     
     grid.innerHTML = filtered.map(property => {
-        const displayPrice = property.type === 'rent' ? property.rentPrice : property.price;
+        const displayPrice = property.type === 'rent' ? (property.rent_price || property.rentPrice) : property.price;
         const mainImage = property.media && property.media.length > 0 ? property.media[0].url : 
             `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23e0e0e0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='20' fill='%23666'%3E${property.title}%3C/text%3E%3C/svg%3E`;
         
@@ -79,7 +257,7 @@ function displayProperties(type = 'all', category = 'all') {
                     <div class="property-type-badge">${property.type === 'sale' ? 'For Sale' : 'For Rent'}</div>
                     ${property.media && property.media.length > 1 ? `
                         <div class="media-controls">
-                            <button class="media-btn" onclick="openMediaGallery(${property.id})" title="View Gallery">
+                            <button class="media-btn" onclick="openMediaGallery('${property.id}')" title="View Gallery">
                                 <img src="icons/camera.png" alt="Gallery" class="icon icon-small" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
                                 <span style="display:none;">📷</span> ${property.media.length}
                             </button>
@@ -90,7 +268,7 @@ function displayProperties(type = 'all', category = 'all') {
                     <span class="property-category">${property.category}</span>
                     <h3>${property.title}</h3>
                     <p class="property-location">
-                        <img src="icons/location.png" alt="Location" class="icon icon-small" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                        <img src="icons/marker.png" alt="Location" class="icon icon-small" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
                         <span style="display:none;">📍</span> ${property.location}
                     </p>
                     <p class="property-price">${displayPrice}</p>
@@ -111,7 +289,7 @@ function displayProperties(type = 'all', category = 'all') {
                             <span>${property.area}</span>
                         </div>
                     </div>
-                    <button class="inquire-btn" onclick="openInquiryModal(${property.id}, '${property.title}')">
+                    <button class="inquire-btn" onclick="openInquiryModal('${property.id}', '${property.title}')">
                         Inquire Now
                     </button>
                 </div>
@@ -144,7 +322,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 
 // Media gallery functionality
 function openMediaGallery(propertyId) {
-    const property = properties.find(p => p.id === propertyId);
+    const property = properties.find(p => p.id == propertyId);
     if (!property || !property.media || property.media.length === 0) return;
     
     currentPropertyMedia = property.media;
@@ -188,13 +366,13 @@ const mediaModal = document.getElementById('media-modal');
 const closeBtns = document.querySelectorAll('.close');
 
 function openInquiryModal(propertyId, propertyTitle) {
-    const property = properties.find(p => p.id === propertyId);
+    const property = properties.find(p => p.id == propertyId);
     document.getElementById('property-id').value = propertyId;
     document.querySelector('#inquiry-modal .modal-header h2').textContent = `Inquiry: ${propertyTitle}`;
     
     // Pre-fill inquiry type based on property type
     const inquiryTypeSelect = document.querySelector('select[name="inquiryType"]');
-    if (property.type === 'rent') {
+    if (property && property.type === 'rent') {
         inquiryTypeSelect.value = 'rental';
     } else {
         inquiryTypeSelect.value = 'purchase';
@@ -219,51 +397,42 @@ window.onclick = function(event) {
     }
 }
 
-// Enhanced form submission
-document.getElementById('inquiry-form').addEventListener('submit', function(e) {
+// Enhanced form submission - Save to Firebase
+document.getElementById('inquiry-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const formData = new FormData(this);
     const data = Object.fromEntries(formData);
     const property = properties.find(p => p.id == data.propertyId);
     
-    // Create detailed email
-    const subject = `${data.inquiryType.toUpperCase()} Inquiry - ${property.title}`;
-    const body = `Property: ${property.title}%0D%0A` +
-                `Type: ${property.type === 'sale' ? 'For Sale' : 'For Rent'}%0D%0A` +
-                `Price: ${property.type === 'sale' ? property.price : property.rentPrice}%0D%0A` +
-                `Location: ${property.location}%0D%0A%0D%0A` +
-                `Client Details:%0D%0A` +
-                `Name: ${data.name}%0D%0A` +
-                `Email: ${data.email}%0D%0A` +
-                `Phone: ${data.phone}%0D%0A` +
-                `Inquiry Type: ${data.inquiryType}%0D%0A%0D%0A` +
-                `Message: ${data.message}`;
+    if (!property) {
+        alert('Property not found');
+        return;
+    }
     
-    window.location.href = `mailto:info@reewahomes.com?subject=${subject}&body=${body}`;
+    // Try to save inquiry to Firebase
+    try {
+        await db.collection('inquiries').add({
+            propertyId: property.id,
+            propertyTitle: property.title,
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            inquiryType: data.inquiryType,
+            message: data.message || '',
+            status: 'pending',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        alert('Thank you for your inquiry! We will contact you within 24 hours.');
+    } catch (error) {
+        console.error('Firebase error:', error);
+        alert('Thank you for your inquiry! (Demo mode - Database not set up yet)\n\nYour inquiry: ' + data.name + ' - ' + data.email);
+    }
     
     inquiryModal.style.display = 'none';
     this.reset();
-    alert('Thank you for your inquiry! We will contact you within 24 hours.');
 });
-
-// Logo handling
-function checkLogo() {
-    const logoImg = document.getElementById('logo-img');
-    const logoText = document.querySelector('.logo-text');
-    
-    // Try to load logo.png
-    const img = new Image();
-    img.onload = function() {
-        logoImg.style.display = 'block';
-        logoText.style.display = 'none';
-    };
-    img.onerror = function() {
-        logoImg.style.display = 'none';
-        logoText.style.display = 'block';
-    };
-    img.src = 'logo.png';
-}
 
 // Smooth scrolling
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -277,5 +446,4 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // Initialize
-displayProperties();
-checkLogo();
+loadProperties();
