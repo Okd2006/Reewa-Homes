@@ -429,6 +429,46 @@ html {
     color: var(--text-muted);
 }
 
+/* Testimonials Section */
+.testimonials-section {
+    padding: 80px 0;
+    background: #f5f5f5;
+}
+
+.embassy-logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 100px;
+    margin-top: 48px;
+    flex-wrap: wrap;
+}
+
+.embassy-logo-link {
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s;
+    padding: 20px;
+    cursor: pointer;
+}
+
+.embassy-logo-link:hover {
+    transform: translateY(-8px);
+}
+
+.embassy-logo {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    transition: all 0.3s;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+
+.embassy-logo-link:hover .embassy-logo {
+    transform: scale(1.08);
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.15));
+}
+
 /* Contact Section */
 .contact-section {
     padding: 80px 0;
