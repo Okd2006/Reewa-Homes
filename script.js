@@ -13,6 +13,7 @@ function updateNavUser(user) {
         <li><a href="#properties">Properties</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#contact">Contact</a></li>
+        <li><a href="dashboard.html" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important; padding: 0.5rem 1rem; border-radius: 20px; color: #fff !important; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">Dashboard</a></li>
     `;
 
     if (user) {
@@ -35,7 +36,7 @@ function updateNavUser(user) {
     } else {
         // not logged in - show login button
         const loginLi = document.createElement('li');
-        loginLi.innerHTML = `<a href="login.html" style="background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%); padding: 0.5rem 1rem; border-radius: 20px; color: #fff;">Login</a>`;
+        loginLi.innerHTML = `<a href="login.html" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important; padding: 0.5rem 1rem; border-radius: 20px; color: #fff !important; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">Login</a>`;
         navList.appendChild(loginLi);
     }
 }
@@ -268,8 +269,7 @@ function displayProperties(type = 'all', category = 'all') {
                     <span class="property-category">${property.category}</span>
                     <h3>${property.title}</h3>
                     <p class="property-location">
-                        <img src="icons/marker.png" alt="Location" class="icon icon-small" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
-                        <span style="display:none;">📍</span> ${property.location}
+                        <img src="icons/location.png" alt="Location" class="icon icon-small"> ${property.location}
                     </p>
                     <p class="property-price">${displayPrice}</p>
                     <div class="property-features">
