@@ -55,7 +55,8 @@ async function loadProperties() {
         const snapshot = await db.collection('properties').orderBy('createdAt', 'desc').get();
         
         if (snapshot.empty) {
-            loadDemoProperties();
+            properties = [];
+            displayProperties();
         } else {
             properties = snapshot.docs.map(doc => ({
                 id: doc.id,
@@ -64,168 +65,11 @@ async function loadProperties() {
         }
     } catch (error) {
         console.error('Error loading properties:', error);
-        loadDemoProperties();
+        properties = [];
+        displayProperties();
     }
     
     displayProperties();
-}
-
-// Load demo properties
-function loadDemoProperties() {
-    properties = [
-        {
-            id: '1',
-            title: "Luxury Villa with Pool",
-            category: "residential",
-            type: "sale",
-            location: "Prime Location, Sector 15",
-            price: "₹2.5 Cr",
-            rent_price: "₹45,000/month",
-            bedrooms: 4,
-            bathrooms: 3,
-            area: "3500 sq ft",
-            description: "Stunning luxury villa with modern amenities and beautiful garden.",
-            media: [
-                {
-                    type: "image",
-                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23e0e0e0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='20' fill='%23666'%3ELuxury Villa - Main%3C/text%3E%3C/svg%3E"
-                }
-            ]
-        },
-        {
-            id: '2',
-            title: "Modern Apartment",
-            category: "residential",
-            type: "rent",
-            location: "City Center, Downtown",
-            price: "₹85 Lac",
-            rent_price: "₹25,000/month",
-            bedrooms: 3,
-            bathrooms: 2,
-            area: "1800 sq ft",
-            description: "Contemporary apartment with city views and premium finishes.",
-            media: [
-                {
-                    type: "image",
-                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23c0c0c0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%23666'%3EModern Apartment%3C/text%3E%3C/svg%3E"
-                }
-            ]
-        },
-        {
-            id: '3',
-            title: "Commercial Office Space",
-            category: "commercial",
-            type: "sale",
-            location: "Business District, Main Road",
-            price: "₹1.8 Cr",
-            rent_price: "₹80,000/month",
-            bedrooms: 0,
-            bathrooms: 2,
-            area: "2500 sq ft",
-            description: "Prime commercial space perfect for offices, with parking and modern facilities.",
-            media: [
-                {
-                    type: "image",
-                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23b0b0b0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%23666'%3EOffice Space%3C/text%3E%3C/svg%3E"
-                }
-            ]
-        },
-        {
-            id: '4',
-            title: "Residential Plot",
-            category: "plots",
-            type: "sale",
-            location: "Green Valley, Sector 22",
-            price: "₹65 Lac",
-            rent_price: null,
-            bedrooms: 0,
-            bathrooms: 0,
-            area: "2400 sq ft",
-            description: "Prime residential plot in developing area with all amenities nearby.",
-            media: [
-                {
-                    type: "image",
-                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23a8d5a8' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%23666'%3EResidential Plot%3C/text%3E%3C/svg%3E"
-                }
-            ]
-        },
-        {
-            id: '5',
-            title: "Penthouse with Terrace",
-            category: "residential",
-            type: "rent",
-            location: "Skyline Towers, City Center",
-            price: "₹3.2 Cr",
-            rent_price: "₹75,000/month",
-            bedrooms: 5,
-            bathrooms: 4,
-            area: "4200 sq ft",
-            description: "Luxurious penthouse with private terrace, panoramic city views, and premium amenities.",
-            media: [
-                {
-                    type: "image",
-                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23d0d0d0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%23666'%3EPenthouse%3C/text%3E%3C/svg%3E"
-                }
-            ]
-        },
-        {
-            id: '6',
-            title: "Retail Shop Space",
-            category: "commercial",
-            type: "rent",
-            location: "Shopping Complex, Market Area",
-            price: "₹95 Lac",
-            rent_price: "₹35,000/month",
-            bedrooms: 0,
-            bathrooms: 1,
-            area: "800 sq ft",
-            description: "Prime retail space in busy shopping area with high foot traffic.",
-            media: [
-                {
-                    type: "image",
-                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23a0a0a0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%23666'%3ERetail Shop%3C/text%3E%3C/svg%3E"
-                }
-            ]
-        },
-        {
-            id: '7',
-            title: "Farmhouse with Land",
-            category: "residential",
-            type: "sale",
-            location: "Countryside, Highway Road",
-            price: "₹1.5 Cr",
-            rent_price: "₹40,000/month",
-            bedrooms: 3,
-            bathrooms: 2,
-            area: "5000 sq ft",
-            description: "Beautiful farmhouse with 1 acre land, perfect for weekend getaway.",
-            media: [
-                {
-                    type: "image",
-                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23c8e6c8' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%23666'%3EFarmhouse%3C/text%3E%3C/svg%3E"
-                }
-            ]
-        },
-        {
-            id: '8',
-            title: "Commercial Plot",
-            category: "plots",
-            type: "sale",
-            location: "Industrial Area, NH-8",
-            price: "₹2.8 Cr",
-            rent_price: null,
-            bedrooms: 0,
-            bathrooms: 0,
-            area: "8000 sq ft",
-            description: "Large commercial plot on main highway, ideal for showroom or warehouse.",
-            media: [
-                {
-                    type: "image",
-                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23909090' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%23666'%3ECommercial Plot%3C/text%3E%3C/svg%3E"
-                }
-            ]
-        }
-    ];
 }
 
 let currentPropertyMedia = [];
