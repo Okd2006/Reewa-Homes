@@ -15,3 +15,4 @@ firebase.initializeApp(firebaseConfig);
 // Initialize services and export for use in other files
 window.firebaseAuth = firebase.auth();
 window.firebaseDb = firebase.firestore();
+window.firebaseStorage = firebase.storage();

@@ -183,7 +183,7 @@ function displayCurrentMedia() {
     const current = currentPropertyMedia[currentMediaIndex];
     
     if (current.type === 'video') {
-        mediaDisplay.innerHTML = `<video controls autoplay muted><source src="${current.url}" type="video/mp4"></video>`;
+        mediaDisplay.innerHTML = `<video controls autoplay muted loop playsinline><source src="${current.url}" type="video/mp4"></video>`;
     } else {
         mediaDisplay.innerHTML = `<img src="${current.url}" alt="Property Image">`;
     }

@@ -1,10 +1,12 @@
 // Admin functionality with Firebase integration
 const db = window.firebaseDb;
 const auth = window.firebaseAuth;
+const storage = window.firebaseStorage;
 let properties = [];
 let inquiries = [];
 let currentMedia = [];
 let editingPropertyId = null;
+let selectedFiles = [];
 
 // Initialize admin panel
 document.addEventListener('DOMContentLoaded', async () => {
@@ -79,6 +81,95 @@ function addMediaUrl() {
     displayMediaList();
 }
 
+// Handle file selection
+document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.getElementById('media-file');
+    if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+            selectedFiles = Array.from(e.target.files);
+            const fileStatus = document.getElementById('file-status');
+            const uploadBtn = document.getElementById('upload-btn');
+            
+            if (selectedFiles.length > 0) {
+                fileStatus.textContent = `${selectedFiles.length} file(s) selected`;
+                uploadBtn.style.display = 'inline-block';
+            } else {
+                fileStatus.textContent = 'No files selected';
+                uploadBtn.style.display = 'none';
+            }
+        });
+    }
+});
+
+// Upload media files to Firebase Storage
+async function uploadMediaFiles() {
+    if (selectedFiles.length === 0) {
+        alert('Please select files first');
+        return;
+    }
+    
+    const uploadProgress = document.getElementById('upload-progress');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const uploadBtn = document.getElementById('upload-btn');
+    
+    uploadProgress.style.display = 'block';
+    uploadBtn.disabled = true;
+    
+    try {
+        for (let i = 0; i < selectedFiles.length; i++) {
+            const file = selectedFiles[i];
+            const fileName = `properties/${Date.now()}_${file.name}`;
+            const storageRef = storage.ref(fileName);
+            
+            progressText.textContent = `Uploading ${i + 1} of ${selectedFiles.length}: ${file.name}`;
+            
+            // Upload file
+            const uploadTask = storageRef.put(file);
+            
+            await new Promise((resolve, reject) => {
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        progressBar.style.width = progress + '%';
+                    },
+                    (error) => reject(error),
+                    async () => {
+                        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                        const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
+                        
+                        currentMedia.push({
+                            type: mediaType,
+                            url: downloadURL
+                        });
+                        
+                        resolve();
+                    }
+                );
+            });
+        }
+        
+        progressText.textContent = 'Upload complete!';
+        displayMediaList();
+        
+        // Reset
+        setTimeout(() => {
+            uploadProgress.style.display = 'none';
+            progressBar.style.width = '0%';
+            document.getElementById('media-file').value = '';
+            document.getElementById('file-status').textContent = 'No files selected';
+            uploadBtn.style.display = 'none';
+            uploadBtn.disabled = false;
+            selectedFiles = [];
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Upload error:', error);
+        alert('Error uploading files: ' + error.message);
+        uploadBtn.disabled = false;
+    }
+}
+
 // Display media list
 function displayMediaList() {
     const mediaList = document.getElementById('media-list');
@@ -86,7 +177,7 @@ function displayMediaList() {
     mediaList.innerHTML = currentMedia.map((media, index) => `
         <div class="media-item">
             ${media.type === 'video' 
-                ? `<video src="${media.url}" muted></video>`
+                ? `<video src="${media.url}" muted loop autoplay playsinline></video>`
                 : `<img src="${media.url}" alt="Property media">`
             }
             <button type="button" class="media-remove" onclick="removeMedia(${index})">×</button>
@@ -300,6 +391,7 @@ async function deleteProperty(id) {
 
 // Make functions globally available
 window.addMediaUrl = addMediaUrl;
+window.uploadMediaFiles = uploadMediaFiles;
 window.removeMedia = removeMedia;
 window.editProperty = editProperty;
 window.deleteProperty = deleteProperty;
