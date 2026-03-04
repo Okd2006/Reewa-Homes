@@ -108,6 +108,13 @@ async function uploadMediaFiles() {
         return;
     }
     
+    // Check if storage is initialized
+    if (!storage) {
+        alert('Firebase Storage is not initialized. Please refresh the page.');
+        console.error('Storage not initialized:', storage);
+        return;
+    }
+    
     const uploadProgress = document.getElementById('upload-progress');
     const progressBar = document.getElementById('progress-bar');
     const progressText = document.getElementById('progress-text');
@@ -117,11 +124,14 @@ async function uploadMediaFiles() {
     uploadBtn.disabled = true;
     
     try {
+        console.log('Starting upload of', selectedFiles.length, 'files');
+        
         for (let i = 0; i < selectedFiles.length; i++) {
             const file = selectedFiles[i];
             const fileName = `properties/${Date.now()}_${file.name}`;
             const storageRef = storage.ref(fileName);
             
+            console.log('Uploading file:', fileName);
             progressText.textContent = `Uploading ${i + 1} of ${selectedFiles.length}: ${file.name}`;
             
             // Upload file
@@ -132,11 +142,17 @@ async function uploadMediaFiles() {
                     (snapshot) => {
                         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                         progressBar.style.width = progress + '%';
+                        console.log('Upload progress:', progress.toFixed(2) + '%');
                     },
-                    (error) => reject(error),
+                    (error) => {
+                        console.error('Upload error:', error);
+                        reject(error);
+                    },
                     async () => {
                         const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
                         const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
+                        
+                        console.log('File uploaded successfully:', downloadURL);
                         
                         currentMedia.push({
                             type: mediaType,
@@ -149,6 +165,7 @@ async function uploadMediaFiles() {
             });
         }
         
+        console.log('All files uploaded. Current media:', currentMedia);
         progressText.textContent = 'Upload complete!';
         displayMediaList();
         
@@ -165,8 +182,9 @@ async function uploadMediaFiles() {
         
     } catch (error) {
         console.error('Upload error:', error);
-        alert('Error uploading files: ' + error.message);
+        alert('Error uploading files: ' + error.message + '\n\nPlease check:\n1. Firebase Storage is enabled\n2. Storage rules allow uploads\n3. You are logged in');
         uploadBtn.disabled = false;
+        uploadProgress.style.display = 'none';
     }
 }
 
