@@ -8,6 +8,33 @@ let currentMedia = [];
 let editingPropertyId = null;
 let selectedFiles = [];
 
+function getFileKey(file) {
+    return `${file.name}_${file.size}_${file.lastModified}`;
+}
+
+function updateSelectedFilesUI() {
+    const fileStatus = document.getElementById('file-status');
+    const uploadBtn = document.getElementById('upload-btn');
+    const selectedList = document.getElementById('selected-files');
+
+    if (!fileStatus || !uploadBtn || !selectedList) return;
+
+    if (selectedFiles.length > 0) {
+        fileStatus.textContent = `${selectedFiles.length} file(s) ready`;
+        uploadBtn.style.display = 'inline-block';
+        selectedList.innerHTML = selectedFiles.map((file, index) => `
+            <div class="selected-file-item">
+                <span>${file.name}</span>
+                <button type="button" class="selected-file-remove" onclick="removeSelectedFile(${index})">Remove</button>
+            </div>
+        `).join('');
+    } else {
+        fileStatus.textContent = 'No files selected';
+        uploadBtn.style.display = 'none';
+        selectedList.innerHTML = '';
+    }
+}
+
 // Initialize admin panel
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Admin panel loading...');
@@ -86,17 +113,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('media-file');
     if (fileInput) {
         fileInput.addEventListener('change', (e) => {
-            selectedFiles = Array.from(e.target.files);
-            const fileStatus = document.getElementById('file-status');
-            const uploadBtn = document.getElementById('upload-btn');
-            
-            if (selectedFiles.length > 0) {
-                fileStatus.textContent = `${selectedFiles.length} file(s) selected`;
-                uploadBtn.style.display = 'inline-block';
-            } else {
-                fileStatus.textContent = 'No files selected';
-                uploadBtn.style.display = 'none';
-            }
+            const incoming = Array.from(e.target.files || []);
+            const existing = new Set(selectedFiles.map(getFileKey));
+
+            incoming.forEach((file) => {
+                const key = getFileKey(file);
+                if (!existing.has(key)) {
+                    selectedFiles.push(file);
+                    existing.add(key);
+                }
+            });
+
+            fileInput.value = '';
+            updateSelectedFilesUI();
         });
     }
 });
@@ -149,17 +178,29 @@ async function uploadMediaFiles() {
                         reject(error);
                     },
                     async () => {
-                        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-                        const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
-                        
-                        console.log('File uploaded successfully:', downloadURL);
-                        
-                        currentMedia.push({
-                            type: mediaType,
-                            url: downloadURL
-                        });
-                        
-                        resolve();
+                        try {
+                            const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                            const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
+                            
+                            console.log('✅ File uploaded successfully!');
+                            console.log('URL:', downloadURL);
+                            console.log('Type:', mediaType);
+                            
+                            currentMedia.push({
+                                type: mediaType,
+                                url: downloadURL
+                            });
+                            
+                            console.log('Current media array:', currentMedia);
+                            resolve();
+                        } catch (error) {
+                            console.error('❌ Error getting download URL:', error);
+                            console.error('Error details:', {
+                                code: error.code,
+                                message: error.message
+                            });
+                            reject(error);
+                        }
                     }
                 );
             });
@@ -173,18 +214,30 @@ async function uploadMediaFiles() {
         setTimeout(() => {
             uploadProgress.style.display = 'none';
             progressBar.style.width = '0%';
-            document.getElementById('media-file').value = '';
-            document.getElementById('file-status').textContent = 'No files selected';
-            uploadBtn.style.display = 'none';
             uploadBtn.disabled = false;
             selectedFiles = [];
+            updateSelectedFilesUI();
         }, 2000);
         
     } catch (error) {
-        console.error('Upload error:', error);
-        alert('Error uploading files: ' + error.message + '\n\nPlease check:\n1. Firebase Storage is enabled\n2. Storage rules allow uploads\n3. You are logged in');
+        console.error('❌ Upload error:', error);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
+        
+        let errorMsg = 'Error uploading files: ' + error.message;
+        
+        if (error.code === 'storage/unauthorized') {
+            errorMsg = 'Permission denied. Make sure:\n1. You are logged in\n2. Firebase Storage rules allow uploads\n3. You have write permission';
+        } else if (error.code === 'storage/unauthenticated') {
+            errorMsg = 'You must be logged in to upload files';
+        } else if (error.code === 'storage/unknown') {
+            errorMsg = 'Upload failed. Check Firebase console and try again.';
+        }
+        
+        alert(errorMsg);
         uploadBtn.disabled = false;
         uploadProgress.style.display = 'none';
+        updateSelectedFilesUI();
     }
 }
 
@@ -207,6 +260,11 @@ function displayMediaList() {
 function removeMedia(index) {
     currentMedia.splice(index, 1);
     displayMediaList();
+}
+
+function removeSelectedFile(index) {
+    selectedFiles.splice(index, 1);
+    updateSelectedFilesUI();
 }
 
 // Display properties
@@ -320,6 +378,9 @@ function editProperty(id) {
 // Add/Update property
 document.getElementById('add-property-form').addEventListener('submit', async function(e) {
     e.preventDefault();
+
+    const submitBtn = document.getElementById('submit-btn');
+    const originalBtnText = submitBtn.textContent;
     
     // Check if user is authenticated
     if (!auth.currentUser) {
@@ -331,6 +392,15 @@ document.getElementById('add-property-form').addEventListener('submit', async fu
     const formData = new FormData(this);
     const editId = formData.get('editId');
     
+    // prevent saving if no media has been uploaded
+    if (!currentMedia || currentMedia.length === 0) {
+        if (!confirm('⚠️ No images/videos have been uploaded. Continue saving property anyway?')) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
+            return;
+        }
+    }
+
     const propertyData = {
         title: formData.get('title'),
         category: formData.get('category'),
@@ -347,22 +417,30 @@ document.getElementById('add-property-form').addEventListener('submit', async fu
         createdBy: auth.currentUser.uid
     };
     
-    const submitBtn = document.getElementById('submit-btn');
-    const originalBtnText = submitBtn.textContent;
     submitBtn.disabled = true;
     submitBtn.textContent = 'Saving...';
     
     try {
+        console.log('📝 Saving property with data:');
+        console.log('Title:', propertyData.title);
+        console.log('Category:', propertyData.category);
+        console.log('Media count:', currentMedia.length);
+        console.log('Media items:', currentMedia);
+        
+        if (currentMedia.length === 0) {
+            console.warn('⚠️ WARNING: No images uploaded! Property will be saved without images.');
+        }
         if (editId) {
             // Update existing property
             await db.collection('properties').doc(editId).update(propertyData);
+            console.log('✅ Property updated successfully! ID:', editId);
             alert('✅ Property updated successfully!');
-            console.log('Property updated:', editId);
         } else {
             // Add new property
             const docRef = await db.collection('properties').add(propertyData);
+            console.log('✅ New property added successfully! ID:', docRef.id);
+            console.log('Media saved to Firestore:', currentMedia);
             alert('✅ Property added successfully! ID: ' + docRef.id);
-            console.log('New property added with ID:', docRef.id);
         }
         
         await loadProperties();

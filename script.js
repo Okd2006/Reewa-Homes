@@ -48,6 +48,37 @@ if (window.firebaseAuth) {
     });
 }
 
+function inferMediaType(url = '') {
+    const value = String(url).toLowerCase();
+    if (/\.(mp4|webm|ogg|mov|m4v)(\?|$)/.test(value)) return 'video';
+    return 'image';
+}
+
+function normalizeMediaItem(media) {
+    if (!media) return null;
+
+    if (typeof media === 'string') {
+        return {
+            url: media,
+            type: inferMediaType(media)
+        };
+    }
+
+    const url = media.url || media.src || media.downloadURL || '';
+    if (!url) return null;
+
+    return {
+        ...media,
+        url,
+        type: media.type === 'video' ? 'video' : inferMediaType(url)
+    };
+}
+
+function normalizeMediaList(media) {
+    if (!Array.isArray(media)) return [];
+    return media.map(normalizeMediaItem).filter(Boolean);
+}
+
 
 // Load properties from Firebase
 async function loadProperties() {
@@ -89,8 +120,10 @@ function displayProperties(type = 'all', category = 'all') {
     }
     
     grid.innerHTML = filtered.map(property => {
+        const mediaList = normalizeMediaList(property.media);
         const displayPrice = property.type === 'rent' ? (property.rent_price || property.rentPrice) : property.price;
-        const mainImage = property.media && property.media.length > 0 ? property.media[0].url : 
+        const firstImage = mediaList.find(item => item.type !== 'video');
+        const mainImage = firstImage?.url || 
             `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23e0e0e0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='20' fill='%23666'%3E${property.title}%3C/text%3E%3C/svg%3E`;
         
         return `
@@ -100,7 +133,7 @@ function displayProperties(type = 'all', category = 'all') {
                         <img src="${mainImage}" alt="${property.title}" class="property-image">
                     </div>
                     <div class="property-type-badge">${property.type === 'sale' ? 'For Sale' : 'For Rent'}</div>
-                    ${property.media && property.media.length > 1 ? `
+                    ${mediaList.length > 1 ? `
                         <div class="media-controls">
                             <button class="media-btn" onclick="openMediaGallery('${property.id}')" title="View Gallery">
                                 <img src="icons/camera.png" alt="Gallery" class="icon icon-small" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
@@ -167,9 +200,10 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 // Media gallery functionality
 function openMediaGallery(propertyId) {
     const property = properties.find(p => p.id == propertyId);
-    if (!property || !property.media || property.media.length === 0) return;
+    const mediaList = normalizeMediaList(property?.media);
+    if (!property || mediaList.length === 0) return;
     
-    currentPropertyMedia = property.media;
+    currentPropertyMedia = mediaList;
     currentMediaIndex = 0;
     
     const modal = document.getElementById('media-modal');
@@ -181,6 +215,7 @@ function openMediaGallery(propertyId) {
 function displayCurrentMedia() {
     const mediaDisplay = document.getElementById('media-display');
     const current = currentPropertyMedia[currentMediaIndex];
+    if (!current || !current.url) return;
     
     if (current.type === 'video') {
         mediaDisplay.innerHTML = `<video controls autoplay muted loop playsinline><source src="${current.url}" type="video/mp4"></video>`;
